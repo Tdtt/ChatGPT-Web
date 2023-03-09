@@ -1,5 +1,11 @@
 # ChatGPT Web
 
+<div style="font-size: 1.5rem;">
+  <a href="./README.md">中文</a> |
+  <a href="./README.en.md">English</a>
+</div>
+</br>
+
 > 声明：此项目只发布于 Github，基于 MIT 协议，免费且作为开源学习使用。并且不会有任何形式的卖号、付费服务、讨论群、讨论组等行为。谨防受骗。
 
 ![cover](./docs/c1.png)
@@ -48,14 +54,14 @@
 [查看详情](https://github.com/Chanzhaoyu/chatgpt-web/issues/138)
 
 切换方式：
-1. 进入 `service/.env` 文件
+1. 进入 `service/.env.example` 文件，复制内容到 `service/.env` 文件
 2. 使用 `OpenAI API Key` 请填写 `OPENAI_API_KEY` 字段 [(获取 apiKey)](https://platform.openai.com/overview)
 3. 使用 `Web API` 请填写 `OPENAI_ACCESS_TOKEN` 字段 [(获取 accessToken)](https://chat.openai.com/api/auth/session)
 4. 同时存在时以 `OpenAI API Key` 优先
 
 反向代理：
 
-`ChatGPTUnofficialProxyAPI`时可用
+`ChatGPTUnofficialProxyAPI`时可用，[详情](https://github.com/transitive-bullshit/chatgpt-api#reverse-proxy)
 
 ```shell
 # service/.env
@@ -76,6 +82,12 @@ API_REVERSE_PROXY=
 [✓] 多会话储存和上下文逻辑
 
 [✓] 对代码等消息类型的格式化美化处理
+
+[✓] 访问权限控制
+
+[✓] 数据导入、导出
+
+[✓] 保存消息到本地图片
 
 [✓] 界面多语言
 
@@ -154,7 +166,9 @@ pnpm dev
 - `OPENAI_API_KEY` 二选一
 - `OPENAI_ACCESS_TOKEN`  二选一，同时存在时，`OPENAI_API_KEY` 优先
 - `OPENAI_API_BASE_URL`  可选，设置 `OPENAI_API_KEY` 时可用
+- `OPENAI_API_MODEL`  可选，设置 `OPENAI_API_KEY` 时可用
 - `API_REVERSE_PROXY` 可选，设置 `OPENAI_ACCESS_TOKEN` 时可用 [参考](#介绍)
+- `AUTH_SECRET_KEY` 访问权限密钥，可选
 - `TIMEOUT_MS` 超时，单位毫秒，可选
 - `SOCKS_PROXY_HOST` 可选，和 SOCKS_PROXY_PORT 一起时生效
 - `SOCKS_PROXY_PORT` 可选，和 SOCKS_PROXY_HOST 一起时生效
@@ -195,8 +209,12 @@ services:
       OPENAI_ACCESS_TOKEN: xxxxxx
       # API接口地址，可选，设置 OPENAI_API_KEY 时可用
       OPENAI_API_BASE_URL: xxxx
+      # API模型，可选，设置 OPENAI_API_KEY 时可用
+      OPENAI_API_MODEL: xxxx
       # 反向代理，可选
       API_REVERSE_PROXY: xxx
+      # 访问权限密钥，可选
+      AUTH_SECRET_KEY: xxx
       # 超时，单位毫秒，可选
       TIMEOUT_MS: 60000
       # Socks代理，可选，和 SOCKS_PROXY_PORT 一起时生效
@@ -205,6 +223,7 @@ services:
       SOCKS_PROXY_PORT: xxxx
 ```
 - `OPENAI_API_BASE_URL`  可选，设置 `OPENAI_API_KEY` 时可用
+- `OPENAI_API_MODEL`  可选，设置 `OPENAI_API_KEY` 时可用
 ###  使用 Railway 部署
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/yytmgc)
@@ -213,11 +232,13 @@ services:
 
 | 环境变量名称          | 必填                   | 备注                                                                                               |
 | --------------------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `PORT`                | 必填                   | 默认 `3002`                                                                                        |
-| `TIMEOUT_MS`          | 可选                   | 超时时间，单位毫秒，                                                                               |
+| `PORT`                | 必填                   | 默认 `3002`
+| `AUTH_SECRET_KEY`          | 可选                   | 访问权限密钥                                        |
+| `TIMEOUT_MS`          | 可选                   | 超时时间，单位毫秒                                                                             |
 | `OPENAI_API_KEY`      | `OpenAI API` 二选一    | 使用 `OpenAI API` 所需的 `apiKey` [(获取 apiKey)](https://platform.openai.com/overview)            |
 | `OPENAI_ACCESS_TOKEN` | `Web API` 二选一       | 使用 `Web API` 所需的 `accessToken` [(获取 accessToken)](https://chat.openai.com/api/auth/session) |
 | `OPENAI_API_BASE_URL`   | 可选，`OpenAI API` 时可用 |  `API`接口地址  |
+| `OPENAI_API_MODEL`   | 可选，`OpenAI API` 时可用 |  `API`模型  |
 | `API_REVERSE_PROXY`   | 可选，`Web API` 时可用 | `Web API` 反向代理地址 [详情](https://github.com/transitive-bullshit/chatgpt-api#reverse-proxy)    |
 | `SOCKS_PROXY_HOST`   | 可选，和 `SOCKS_PROXY_PORT` 一起时生效 | Socks代理    |
 | `SOCKS_PROXY_PORT`   | 可选，和 `SOCKS_PROXY_HOST` 一起时生效 | Socks代理端口    |
@@ -245,7 +266,7 @@ PS: 不进行打包，直接在服务器上运行 `pnpm start` 也可
 
 #### 前端网页
 
-1、修改根目录下 `.env` 内 `VITE_APP_API_BASE_URL` 为你的实际后端接口地址
+1、参考根目录下 `.env.example` 文件内容创建 `.env` 文件，修改 `VITE_APP_API_BASE_URL` 为你的实际后端接口地址
 
 2、根目录下运行以下命令，然后将 `dist` 文件夹内的文件复制到你网站服务的根目录下
 
@@ -267,6 +288,10 @@ A: 根目录下 `.env` 文件中的 `VITE_GLOB_API_URL` 字段。
 Q: 文件保存时全部爆红?
 
 A: `vscode` 请安装项目推荐插件，或手动安装 `Eslint` 插件。
+
+Q: 前端没有打字机效果？
+
+A: 一种可能原因是经过 Nginx 反向代理，开启了 buffer，则 Nginx 会尝试从后端缓冲一定大小的数据再发送给浏览器。请尝试在反代参数后添加 `proxy_buffering off;`，然后重载 Nginx。其他 web server 配置同理。
 
 ## 参与贡献
 
